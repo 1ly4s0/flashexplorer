@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/styles.css">
+</head>
+
+<body class="font-poppins bg-gray-100">
+    <div class="top-bar">
+        <div class="top-bar__left">
+            <div class="top-bar__left__icon">
+                <img src="assets/images/icons/icon.png" alt="logo" />
+            </div>
+            <div class="top-bar__left__title">File Explorer</div>
+        </div>
+        <div class="top-bar__right">
+            <i class="fa-solid fa-window-minimize"></i>
+            <i class="fa-regular fa-window-maximize"></i>
+            <i class="fa-solid fa-xmark"></i>
+        </div>
+    </div>
+    <div class="overlay">
+        <div id="panelbig">
+            <div class="panelalert" id="alert-panel">
+                <img id="alert-panel-icon" />
+                <div class="panelalert-text" id="alert-panel-text"></div>
+            </div>
+        </div>
+    </div>
+    <div class="main-panel">
+        <div class="top-options-panel">
+            <input class="file-explorer-path input is-dark" id="breadcrumbs"></input>
+            <div class="top-options-panel__buttons">
+                <button id="back-btn" class="button is-dark is-outlined">Back</button>
+                <button id="forward-btn" class="button is-dark is-outlined">Forward</button>
+                <button id="up-btn" class="button is-dark is-outlined">Up</button>
+            </div>
+        </div>
+        <div id="file-list" class="files-panel">
+        </div>
+    </div>
+    <div class="modal" id="progress-modal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <div class="box">
+                <progress class="progress is-primary" id="progress-bar" value="0" max="100"></progress>
+                <p id="progress-text">0%</p>
+            </div>
+        </div>
+        <button class="modal-close is-large" aria-label="close" onclick="closeModal()"></button>
+    </div>
+
+
+    <script src="renderer.js" type="module"></script>
+</body>
+
+</html>

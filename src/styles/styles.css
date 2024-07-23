@@ -1,0 +1,267 @@
+@import "https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css";
+@import "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css";
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+body,
+html {
+  font-family: "Poppins", sans-serif;
+  background-color: #121212;
+  color: #f5f5f5;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  overflow: hidden;
+  user-select: none;
+}
+
+.main-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  padding-top: 50px;
+}
+
+.files-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  margin-top: 10px;
+  align-content: flex-start;
+}
+
+.tab-column {
+  min-width: 220px;
+  min-height: 50px;
+  max-width: 220px;
+  max-height: 50px;
+  background-color: #212121;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 10px;
+  transition: background-color 0.3s;
+  flex: 1;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  overflow: hidden;
+  user-select: none;
+  position: relative;
+}
+
+.tab-column .file-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background-size: cover;
+  background-position: center;
+  filter: blur(10px);
+  transition: filter 0.5s;
+}
+
+.tab-column .file-preview::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}
+
+.tab-column span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 3;
+  position: relative;
+  font-weight: 500;
+}
+
+.tab-column i {
+  z-index: 3;
+}
+
+.tab-column:hover {
+  background-color: #424242;
+}
+
+.top-options-panel {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.top-options-panel__buttons {
+  display: flex;
+  gap: 10px;
+
+  & button {
+    color: #fff !important;
+    border-radius: 10px;
+  }
+}
+
+.file-explorer-path {
+  background-color: #212121;
+  color: #fff;
+  border-radius: 10px;
+  width: 100px;
+  transition: width 0.3s;
+}
+
+.file-explorer-path.big {
+  width: 500px;
+}
+
+.main-panel-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* alerts */
+
+.overlay {
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  width: auto;
+  z-index: 99999;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  transform: translateX(-50%);
+}
+
+.panelalert {
+  width: 55px;
+  height: 60px;
+  overflow: hidden;
+  position: relative;
+  border-radius: 10px;
+  transition: width 0.5s ease, height 0.5s ease;
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
+  z-index: 99999;
+}
+
+.panelalert img {
+  width: 35px;
+  height: auto;
+  margin-left: 10px;
+  margin-right: 5px;
+  transition: transform 0.5s ease;
+}
+
+.panelalert-text {
+  flex: 1;
+  overflow: hidden;
+  opacity: 0;
+  font-size: 15px;
+  transition: opacity 0.5s ease;
+  font-family: Poppins;
+  white-space: nowrap;
+  text-align: left;
+  color: #fff;
+  margin-top: 5px;
+  margin-right: 10px;
+}
+
+.panelalert-text strong {
+  font-weight: 800;
+  font-size: 18px;
+  line-height: 1;
+  color: #fff;
+}
+
+#panelbig.normal-zoom {
+  transform: scale(1);
+  transition: transform 0.3s ease;
+}
+
+#panelbig.big-zoom {
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
+}
+
+#panelbig {
+  transform: scale(0);
+  transition: transform 0.5s ease;
+}
+
+.panelalert.active-alert {
+  width: 100%;
+  height: 60px;
+}
+
+.panelalert.active-alert .panelalert-text {
+  opacity: 1;
+}
+
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  background-color: #212121;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  z-index: 9999;
+  cursor: pointer !important;
+  user-select: all !important;
+  -webkit-app-region: drag !important;
+}
+
+.top-bar__left {
+  display: flex;
+  gap: 5px;
+}
+
+.top-bar__right {
+  display: flex;
+  gap: 10px;
+}
+
+.top-bar__right {
+  display: flex;
+  gap: 10px;
+}
+
+.top-bar__right i {
+  user-select: none;
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+
+  &:hover {
+    color: #b5b5b5;
+  }
+}
+
+.top-bar__left__icon {
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  align-self: center;
+}
+
+.top-bar__left__title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  user-select: none;
+}
