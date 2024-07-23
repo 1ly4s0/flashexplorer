@@ -1,6 +1,6 @@
 # Flash Explorer - ElectronJS
 
-![Flash Explorer](./assets/screenshot.png)
+![Flash Explorer](./src/assets/screenshot.png)
 
 ## Description
 
