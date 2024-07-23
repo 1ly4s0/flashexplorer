@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "dev": "nodemon --exec npm start",
-    "build": "electron-builder"
+    "build": "node build.js"
   },
   "nodemonConfig": {
     "ext": "js,html,css"
