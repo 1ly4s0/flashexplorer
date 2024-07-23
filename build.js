@@ -32,7 +32,7 @@ builder.build({
             createDesktopShortcut: true,
             runAfterFinish: true,
             multiLanguageInstaller: true,
-            license: "./LICENSE.md",
+            license: "./LICENSE",
         }
     }
 }).then(() => {
