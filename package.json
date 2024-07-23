@@ -1,7 +1,7 @@
 {
-  "name": "fileexplorer",
+  "name": "flashexplorer",
   "version": "1.0.0",
-  "description": "",
+  "description": "A desktop file explorer application built with ElectronJS, featuring basic file operations using robocopy for enhanced performance.",
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
@@ -11,9 +11,30 @@
   "nodemonConfig": {
     "ext": "js,html,css"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "ElectronJS",
+    "File Explorer",
+    "Desktop Application",
+    "File Management",
+    "File Navigation",
+    "Windows Explorer",
+    "File Operations",
+    "Copy Files",
+    "Paste Files",
+    "Delete Files",
+    "File System",
+    "FontAwesome Icons",
+    "HTML",
+    "CSS",
+    "Node.js",
+    "JavaScript",
+    "Cross-Platform",
+    "Robocopy",
+    "User Interface",
+    "Breadcrumb Navigation"
+  ],
+  "author": "1ly4s0",
+  "license": "MIT",
   "devDependencies": {
     "electron": "^31.2.1",
     "electron-builder": "^24.13.3",
