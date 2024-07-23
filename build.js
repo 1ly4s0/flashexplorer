@@ -1,7 +1,5 @@
 const builder = require('electron-builder');
-const obfuscator = require('javascript-obfuscator');
-const fs = require('fs-extra');
-const path = require('path');
+
 const { productname } = require('./package.json');
 builder.build({
     config: {
