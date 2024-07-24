@@ -57,6 +57,14 @@ html {
   position: relative;
 }
 
+.tab-column.selected {
+  background-color: #5185ff;
+}
+
+.tab-column.selected:hover {
+  background-color: #6794fb;
+}
+
 .tab-column .file-preview {
   position: absolute;
   top: 0;
@@ -131,8 +139,7 @@ html {
   font-weight: 600;
 }
 
-/* alerts */
-
+/* Alerts */
 .overlay {
   position: fixed;
   top: 30px;

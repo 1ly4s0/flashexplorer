@@ -8,6 +8,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const fileList = document.getElementById('file-list');
     const breadcrumbs = document.getElementById('breadcrumbs');
     let currentDir = 'C:/';
+    let selectedPaths = [];
+
+    const minimize = () => {
+        ipcRenderer.invoke('minimize');
+    }
+
+    const minimzeMaximize = () => {
+        ipcRenderer.invoke('minimize-maximize');
+    }
+
+    const closeApp = () => {
+        ipcRenderer.invoke('close-app');
+    }
+
+    document.getElementById('minimize-btn').addEventListener('click', minimize);
+    document.getElementById('minimizemaximize-btn').addEventListener('click', minimzeMaximize);
+    document.getElementById('close-btn').addEventListener('click', closeApp);
 
     async function loadFiles(directory) {
         currentDir = directory;
@@ -19,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         files.forEach(file => {
             const fileElement = document.createElement('div');
             fileElement.className = 'tab-column';
+            fileElement.setAttribute('data-path', file.path);
 
             const icon = document.createElement('i');
             icon.className = file.isDirectory ? 'fas fa-folder fa-2x' : 'fas fa-file fa-2x';
@@ -43,12 +61,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
+            fileElement.addEventListener('click', () => {
+                if (event.ctrlKey) {
+                    fileElement.classList.toggle('selected');
+                    if (fileElement.classList.contains('selected')) {
+                        selectedPaths.push(fileElement.getAttribute('data-path'));
+                    } else {
+                        selectedPaths = selectedPaths.filter(path => path !== fileElement.getAttribute('data-path'));
+                    }
+                    return;
+                } else if (event.shiftKey) {
+                    const selected = document.querySelector('.tab-column.selected');
+                    console.log(selected);
+                    if (selected) {
+                        const files = Array.from(document.querySelectorAll('.tab-column'));
+                        const startIndex = [...files].indexOf(selected);
+                        const endIndex = [...files].indexOf(fileElement);
+                        const selection = files.slice(Math.min(startIndex, endIndex), Math.max(startIndex, endIndex) + 1);
+                        selection.forEach(file => file.classList.add('selected'));
+                        selectedPaths = selection.map(file => file.getAttribute('data-path'));
+                    }
+                } else {
+                    const selected = document.querySelectorAll('.tab-column.selected');
+                    if (selected) {
+                        selected.forEach(file => file.classList.remove('selected'));
+                        fileElement.classList.add('selected');
+                        selectedPaths = [fileElement.getAttribute('data-path')];
+                    } else {
+                        fileElement.classList.add('selected');
+                        selectedPaths = [fileElement.getAttribute('data-path')];
+                    }
+                }
+
+                document.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('tab-column')) {
+                        const selected = document.querySelectorAll('.tab-column.selected');
+                        selected.forEach(file => file.classList.remove('selected'));
+                        selectedPaths = [];
+                    }
+                });
+            });
+
             if (!file.isDirectory && isImage(file.name)) {
-                // Add data attributes to handle lazy loading
                 fileElement.setAttribute('data-file-path', file.path);
                 fileElement.setAttribute('data-file-name', file.name);
 
-                // Create a filePreview div to hold the image
                 const filePreview = document.createElement('div');
                 filePreview.className = 'file-preview';
                 fileElement.appendChild(filePreview);
@@ -110,52 +167,106 @@ document.addEventListener('DOMContentLoaded', () => {
     ipcRenderer.on('context-menu-command', async (event, data) => {
         const { action, filePath } = data;
         if (action === 'copy') {
-            localStorage.setItem('clipboard', filePath);
-            localStorage.setItem('operation', 'copy');
+            console.log(selectedPaths);
+            if (selectedPaths.length === 0) {
+                localStorage.setItem('clipboard', filePath);
+                localStorage.setItem('operation', 'copy');
+            } else {
+                localStorage.setItem('clipboard', JSON.stringify(selectedPaths));
+                localStorage.setItem('operation', 'copy');
+            }
         } else if (action === 'paste') {
-            const clipboardPath = localStorage.getItem('clipboard');
-            const operation = localStorage.getItem('operation');
+            let clipboardPath = localStorage.getItem('clipboard');
+            let operation = localStorage.getItem('operation');
+
             if (clipboardPath && operation) {
-                const destination = path.join(currentDir, path.basename(clipboardPath));
-                const scriptPath = path.join(__dirname, 'copy-script.ps1');
-                const command = `powershell.exe -ExecutionPolicy Bypass -File "${scriptPath}" -Source "${clipboardPath}" -Destination "${destination}"`;
-                console.log(command);
-                showModal();
+                if (Array.isArray(JSON.parse(clipboardPath))) {
+                    clipboardPath = JSON.parse(clipboardPath);
+                    clipboardPath.forEach(async (path_) => {
+                        const destination = path.join(currentDir, path.basename(path_));
+                        const scriptPath = path.join(__dirname, 'copy-script.ps1');
+                        const command = `powershell.exe -ExecutionPolicy Bypass -File "${scriptPath}" -Source "${path_}" -Destination "${destination}"`;
+                        console.log(command);
+                        showModal();
+                        await executeCommand(command).then(() => {
+                            loadFiles(currentDir);
+                            closeModal();
+                            new Alert().ShowAlert({
+                                icon: 'success',
+                                title: "Success",
+                                text: `Copied ${path_} to ${destination}`
+                            });
+                        }).catch((err) => {
+                            closeModal();
+                            new Alert().ShowAlert({
+                                icon: 'error',
+                                title: "Error",
+                                text: err
+                            });
+                        });
+                    });
+                } else {
+                    const destination = path.join(currentDir, path.basename(clipboardPath));
+                    const scriptPath = path.join(__dirname, 'copy-script.ps1');
+                    const command = `powershell.exe -ExecutionPolicy Bypass -File "${scriptPath}" -Source "${clipboardPath}" -Destination "${destination}"`;
+                    console.log(command);
+                    showModal();
+                    await executeCommand(command).then(() => {
+                        loadFiles(currentDir);
+                        closeModal();
+                        new Alert().ShowAlert({
+                            icon: 'success',
+                            title: "Success",
+                            text: `Copied ${clipboardPath} to ${destination}`
+                        });
+                    }).catch((err) => {
+                        closeModal();
+                        new Alert().ShowAlert({
+                            icon: 'error',
+                            title: "Error",
+                            text: err
+                        });
+                    });
+                }
+            }
+        } else if (action === 'delete') {
+            if (!selectedPaths.length) {
+                const command = `rd /s /q "${filePath}"`;
                 await executeCommand(command).then(() => {
                     loadFiles(currentDir);
-                    closeModal();
                     new Alert().ShowAlert({
                         icon: 'success',
                         title: "Success",
-                        text: `Copied ${clipboardPath} to ${destination}`
+                        text: `Deleted ${filePath}`
                     });
                 }).catch((err) => {
-                    closeModal();
+                    console.log(err);
                     new Alert().ShowAlert({
                         icon: 'error',
                         title: "Error",
                         text: err
                     });
                 });
+            } else {
+                selectedPaths.forEach(async (path_) => {
+                    const command = `rd /s /q "${path_}"`;
+                    await executeCommand(command).then(() => {
+                        loadFiles(currentDir);
+                        new Alert().ShowAlert({
+                            icon: 'success',
+                            title: "Success",
+                            text: `Deleted ${path_}`
+                        });
+                    }).catch((err) => {
+                        console.log(err);
+                        new Alert().ShowAlert({
+                            icon: 'error',
+                            title: "Error",
+                            text: err
+                        });
+                    });
+                });
             }
-        } else if (action === 'delete') {
-            const command = `rd /s /q "${filePath}"`;
-            console.log(command);
-            await executeCommand(command).then(() => {
-                loadFiles(currentDir);
-                new Alert().ShowAlert({
-                    icon: 'success',
-                    title: "Success",
-                    text: `Deleted ${filePath}`
-                });
-            }).catch((err) => {
-                console.log(err);
-                new Alert().ShowAlert({
-                    icon: 'error',
-                    title: "Error",
-                    text: err
-                });
-            });
         }
     });
 
