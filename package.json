@@ -1,7 +1,7 @@
 {
   "name": "flashexplorer",
   "productname": "Flash Explorer",
-  "version": "1.0.0.1",
+  "version": "1.0.1",
   "description": "A desktop file explorer application built with ElectronJS, featuring basic file operations using robocopy for enhanced performance.",
   "main": "src/main.js",
   "scripts": {
